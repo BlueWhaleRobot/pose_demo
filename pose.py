@@ -42,12 +42,16 @@ if __name__ == "__main__":
         print("##########################################################")
         with ROBOTS_LOCK:
             for robot in ROBOTS:
-                res = requests.get(
-                    "http://{ip}:{port}/api/v1/navigation/pose".format(
-                        ip=ROBOTS[robot]["ip"],
-                        port=ROBOTS[robot]["port"]
-                    ))
-                res = json.loads(res.content.decode("utf-8"))
+                res = None
+                try:
+                    res = requests.get(
+                        "http://{ip}:{port}/api/v1/navigation/pose".format(
+                            ip=ROBOTS[robot]["ip"],
+                            port=ROBOTS[robot]["port"]
+                        ))
+                    res = json.loads(res.content.decode("utf-8"))
+                except:
+                    continue
                 ROBOTS[robot]["pose"] = res
                 print("ID: {robot_id} x: {x} y: {y} angle: {angle}".format(
                     robot_id=ROBOTS[robot]['id'][:8],
@@ -55,4 +59,5 @@ if __name__ == "__main__":
                     y=ROBOTS[robot]["pose"]['y'],
                     angle=ROBOTS[robot]["pose"]['angle'],
                 ))
+
         time.sleep(1)
